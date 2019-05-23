@@ -20,7 +20,7 @@
         xsi:schemaLocation="http://mina.apache.org/ftpserver/spring/v1 http://mina.apache.org/ftpserver/ftpserver-1.0.xsd"
         id="myServer" max-threads="16" max-logins="100" max-anon-logins="100" anon-enabled="true"
         max-login-failures="3" login-failure-delay="10000">
-    <listeners>
+    <!--<listeners>
         <nio-listener name="default" port="2222" local-address="" implicit-ssl="true" idle-timeout="60">
             <ssl protocol="TLS" client-authentication="NONE" enabled-ciphersuites="">
                 <keystore file="ftpserver.jks" password="123456" key-password="123456" key-alias="ftpserver" type="JKS" algorithm="SunX509"/>
@@ -32,7 +32,7 @@
             </data-connection>
             <blacklist>1.2.3.0/16, 1.2.4.0/16, 1.2.3.4</blacklist>
         </nio-listener>
-    </listeners>
+    </listeners>-->
     <listeners>
         <nio-listener name="default" port="21"/>
     </listeners>
