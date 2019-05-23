@@ -8,9 +8,9 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.vimhe'
-version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
-
-//version = '1.0.0-RELEASE'
+//version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
+version = '1.0.0-RELEASE'
+archivesBaseName = 'ftpserver-spring-boot-starter'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
@@ -28,8 +28,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    implementation 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -38,3 +38,68 @@ dependencies {
 
 bootJar { enabled = false }
 jar { enabled = true }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+//            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//                authentication(userName: ossrhUsername, password: ossrhPassword)
+//            }
+
+            pom.project {
+                name = project.archivesBaseName
+                description = "An apache ftp server starter for spring boot."
+                url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                packaging = "jar"
+
+                scm {
+                    url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                    connection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
+                    developerConnection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
+                }
+
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        distribution = "repo"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = "vimhe"
+                        email = "vimhe0912@gmail.com"
+                        url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                    }
+                }
+            }
+        }
+    }
+}
