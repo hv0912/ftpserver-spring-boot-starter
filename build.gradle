@@ -1,0 +1,40 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.5.RELEASE'
+    id 'java'
+    id 'maven'
+    id 'signing'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.vimhe'
+version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
+
+//version = '1.0.0-RELEASE'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    maven { url = 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+    compileOnly 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootJar { enabled = false }
+jar { enabled = true }
