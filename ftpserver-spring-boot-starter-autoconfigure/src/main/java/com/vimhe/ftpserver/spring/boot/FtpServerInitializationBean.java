@@ -16,32 +16,33 @@
 
 package com.vimhe.ftpserver.spring.boot;
 
-import com.vimhe.ftpserver.spring.boot.bean.Server;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import org.apache.ftpserver.FtpServer;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
- * Ftp Server configuration properties.
+ * Apache FtpServer InitializationBean
  *
  * @author Vimhe
  */
-@Data
+@RequiredArgsConstructor
 @Component
-@ConfigurationProperties(prefix = "ftpserver")
-public class ApacheFtpServerConfigurationProperties {
+public class FtpServerInitializationBean implements InitializingBean, DisposableBean {
 
-    /**
-     * Whether to enable xml-based configuration.
-     * <p>
-     * If true, use xml-based configuration, otherwise use the configuration in application.properties, There are all
-     * default configuration in application.properties, no additional configuration can be used.
-     */
-    public Boolean useXmlConfig = false;
+    private final FtpServer ftpServer;
 
-    /**
-     * Server configuration.
-     */
-    private Server server = new Server();
+    @Override
+    public void destroy() throws Exception {
+        if (!ftpServer.isStopped()) {
+            ftpServer.stop();
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        ftpServer.start();
+    }
 
 }

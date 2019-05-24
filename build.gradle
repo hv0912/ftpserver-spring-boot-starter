@@ -1,105 +1,115 @@
 plugins {
-    id 'org.springframework.boot' version '2.1.5.RELEASE'
-    id 'java'
-    id 'maven'
-    id 'signing'
+    id 'org.springframework.boot' version '2.1.5.RELEASE' apply false
 }
 
-apply plugin: 'io.spring.dependency-management'
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-group = 'com.vimhe'
-//version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
-version = '1.0.0-RELEASE'
-archivesBaseName = 'ftpserver-spring-boot-starter'
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+    group = 'com.vimhe'
+    // version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
+    version = '1.0.0-RELEASE'
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-}
 
-repositories {
-    maven { url = 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    mavenLocal()
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.apache.ftpserver:ftpserver-core:1.1.1'
-    implementation 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-bootJar { enabled = false }
-jar { enabled = true }
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
     repositories {
-        mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment)
-            }
+        maven { url = 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenLocal()
+        mavenCentral()
+    }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+    bootJar { enabled = false }
+    jar { enabled = true }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = "sources"
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = "javadoc"
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 //            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
 //                authentication(userName: ossrhUsername, password: ossrhPassword)
 //            }
 
-            pom.project {
-                name = project.archivesBaseName
-                description = "An apache ftp server starter for spring boot."
-                url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
-                packaging = "jar"
-
-                scm {
+                pom.project {
+                    name = project.archivesBaseName
+                    description = "An apache ftp server starter for spring boot."
                     url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
-                    connection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
-                    developerConnection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
-                }
+                    packaging = "jar"
 
-                licenses {
-                    license {
-                        name = "The Apache Software License, Version 2.0"
-                        distribution = "repo"
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                    }
-                }
-
-                developers {
-                    developer {
-                        name = "vimhe"
-                        email = "vimhe0912@gmail.com"
+                    scm {
                         url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                        connection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
+                        developerConnection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
+                    }
+
+                    licenses {
+                        license {
+                            name = "The Apache Software License, Version 2.0"
+                            distribution = "repo"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name = "vimhe"
+                            email = "vimhe0912@gmail.com"
+                            url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+project('ftpserver-spring-boot-starter') {
+    dependencies {
+        implementation "${project.group}:ftpserver-spring-boot-starter-autoconfigure:${project.version}"
+    }
+}
+
+project('ftpserver-spring-boot-starter-autoconfigure') {
+    dependencies {
+        implementation 'org.apache.ftpserver:ftpserver-core:1.1.1'
+        implementation 'org.springframework.boot:spring-boot-starter'
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 }

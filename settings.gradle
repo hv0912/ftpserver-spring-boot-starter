@@ -3,4 +3,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'vimhe-ftpserver-spring-boot-starter'
+rootProject.name = 'ftpserver-spring-boot-starter'
+include 'ftpserver-spring-boot-starter'
+include 'ftpserver-spring-boot-starter-autoconfigure'

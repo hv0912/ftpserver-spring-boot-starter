@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot.bean;
+package com.vimhe.ftpserver.spring.boot.properties;
 
 import lombok.Data;
 import org.apache.ftpserver.ssl.ClientAuth;
 import org.apache.mina.filter.firewall.Subnet;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -33,7 +34,8 @@ import java.util.List;
  * @author Vimhe
  */
 @Data
-public class NioListener {
+@Component
+public class FtpServerListenerProperties {
 
     /**
      * The listener name, if "default" it will override the settings on the default listener.
@@ -69,9 +71,9 @@ public class NioListener {
      * configured on a user (e.g. using the PropertiesUserManager idletime configuration), it will override the
      * listener value. Thus, the listener value enforce the upper threshold, but lower values can be provided per user.
      * <p>
-     * Default value: 60
+     * Default value: 300
      */
-    private Duration idleTimeout = Duration.ofSeconds(60);
+    private Duration idleTimeout = Duration.ofSeconds(300);
 
     /**
      * Required for listeners that should provide FTPS support.
@@ -219,9 +221,9 @@ public class NioListener {
         /**
          * Number of seconds before an idle data connection is closed.
          * <p>
-         * Default value: 60
+         * Default value: 300
          */
-        private Duration idleTimeout = Duration.ofSeconds(60);
+        private Duration idleTimeout = Duration.ofSeconds(300);
 
         /**
          * This element provides configuration for active data connections.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot.bean;
+package com.vimhe.ftpserver.spring.boot.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,17 +25,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Server configuration
+ *
  * @author Vimhe
  */
 @Data
 @Component
 @ConfigurationProperties(prefix = "ftpserver.server")
-public class Server {
+public class FtpServerProperties {
 
     /**
      * A unique identifier for this server.
      */
-    private String id = "myServer";
+    private String id = "myFtpServer";
 
     /**
      * The maximum number of threads used in the thread pool for handling client connections
@@ -47,16 +49,16 @@ public class Server {
     /**
      * The maximum number of simultaneous users.
      * <p>
-     * Default value: 100
+     * Default value: 16
      */
-    private Integer maxLogins = 100;
+    private Integer maxLogins = 16;
 
     /**
      * The maximum number of simultaneous anonymous users.
      * <p>
-     * Default value: 100
+     * Default value: 16
      */
-    private Integer maxAnonLogins = 100;
+    private Integer maxAnonLogins = 16;
 
     /**
      * Are anonymous logins enabled?.
@@ -76,14 +78,14 @@ public class Server {
      * The number of milliseconds that the connection is delayed after a failed login attempt. Used to limit to
      * possibility of brute force guessing passwords.
      * <p>
-     * Default value: 10000
+     * Default value: 500
      */
-    private Duration loginFailureDelay = Duration.ofMillis(10000);
+    private Duration loginFailureDelay = Duration.ofMillis(500);
 
     /**
      * The listener shipped with FtpServer is called "nio-listener" since it is based Java NIO for performance and
      * scalability.
      */
-    private List<NioListener> listeners = new ArrayList<>(1);
+    private List<FtpServerListenerProperties> listeners = new ArrayList<>(1);
 
 }
