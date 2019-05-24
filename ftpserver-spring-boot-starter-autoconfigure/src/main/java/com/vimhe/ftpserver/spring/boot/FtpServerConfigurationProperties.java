@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Apache FtpServer Configuration Properties
+ * FtpServer Configuration Properties.
  *
  * @author Vimhe
  */

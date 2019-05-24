@@ -9,7 +9,9 @@ import java.io.File;
 import java.time.Duration;
 
 /**
- * @author V
+ * User configuration Properties.
+ *
+ * @author Vimhe
  */
 @Data
 @Component

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Server configuration
+ * Server configuration Properties.
  *
  * @author Vimhe
  */

@@ -13,7 +13,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author V
+ * Custom Ftp User Manager.
+ *
+ * @author Vimhe
  */
 public class FtpUserManager implements UserManager {
 

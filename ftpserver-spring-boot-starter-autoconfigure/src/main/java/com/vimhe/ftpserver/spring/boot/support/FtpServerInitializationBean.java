@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot;
+package com.vimhe.ftpserver.spring.boot.support;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.ftpserver.FtpServer;
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
- * Apache FtpServer InitializationBean
+ * FtpServer InitializationBean.
  *
  * @author Vimhe
  */

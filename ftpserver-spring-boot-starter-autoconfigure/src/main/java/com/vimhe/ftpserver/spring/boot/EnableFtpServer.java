@@ -16,12 +16,13 @@
 
 package com.vimhe.ftpserver.spring.boot;
 
+import com.vimhe.ftpserver.spring.boot.support.FtpServerInitializationBean;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
 /**
- * EnableApacheFtpServer
+ * EnableFtpServer
  *
  * @author Vimhe
  */

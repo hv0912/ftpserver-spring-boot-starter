@@ -36,7 +36,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * Apache FtpServer AutoConfiguration
+ * FtpServer AutoConfiguration.
  *
  * @author Vimhe
  */
