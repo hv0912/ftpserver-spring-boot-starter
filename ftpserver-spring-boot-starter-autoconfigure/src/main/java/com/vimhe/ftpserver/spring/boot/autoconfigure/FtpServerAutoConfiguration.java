@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot;
+package com.vimhe.ftpserver.spring.boot.autoconfigure;
 
-import com.vimhe.ftpserver.spring.boot.ext.FtpUserManager;
-import com.vimhe.ftpserver.spring.boot.properties.FtpServerListenerProperties;
-import com.vimhe.ftpserver.spring.boot.properties.FtpServerProperties;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.ext.FtpUserManager;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.properties.FtpServerListenerProperties;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.properties.FtpServerProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.apache.ftpserver.*;

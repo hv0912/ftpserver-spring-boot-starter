@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot;
+package com.vimhe.ftpserver.spring.boot.autoconfigure;
 
-import com.vimhe.ftpserver.spring.boot.support.FtpServerInitializationBean;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.support.FtpServerInitializationBean;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

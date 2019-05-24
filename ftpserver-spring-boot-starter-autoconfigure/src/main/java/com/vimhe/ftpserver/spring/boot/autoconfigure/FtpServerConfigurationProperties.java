@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot;
+package com.vimhe.ftpserver.spring.boot.autoconfigure;
 
-import com.vimhe.ftpserver.spring.boot.properties.FtpServerProperties;
-import com.vimhe.ftpserver.spring.boot.properties.FtpUserProperties;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.properties.FtpServerProperties;
+import com.vimhe.ftpserver.spring.boot.autoconfigure.properties.FtpUserProperties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

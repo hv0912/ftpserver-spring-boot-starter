@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.vimhe.ftpserver.spring.boot.support;
+package com.vimhe.ftpserver.spring.boot.autoconfigure.support;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.ftpserver.FtpServer;
