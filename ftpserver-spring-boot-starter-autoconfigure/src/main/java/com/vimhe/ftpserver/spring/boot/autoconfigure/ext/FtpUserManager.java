@@ -18,15 +18,15 @@ package com.vimhe.ftpserver.spring.boot.autoconfigure.ext;
 
 import com.vimhe.ftpserver.spring.boot.autoconfigure.FtpServerConfigurationProperties;
 import org.apache.ftpserver.ftplet.*;
+import org.apache.ftpserver.usermanager.AnonymousAuthentication;
+import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
 import org.apache.ftpserver.usermanager.impl.TransferRatePermission;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
+import org.springframework.util.unit.DataSize;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Custom Ftp User Manager.
@@ -35,83 +35,114 @@ import java.util.stream.Collectors;
  */
 public class FtpUserManager implements UserManager {
 
-    private List<User> users;
+    private Set<User> userSet = new HashSet<>(2);
 
-    public FtpUserManager(FtpServerConfigurationProperties configurationProperties) {
-        users = configurationProperties.getUser().stream()
-            .map(userProperties -> {
-                BaseUser user = new BaseUser();
-                user.setName(userProperties.getUsername());
-                user.setPassword(userProperties.getUserPassword());
-                user.setHomeDirectory(userProperties.getHomeDirectory().getName());
-                user.setEnabled(userProperties.getEnableFlag());
-                user.setMaxIdleTime((int) userProperties.getIdleTime().getSeconds());
-
-                Authority writePermission = new WritePermission(userProperties.getHomeDirectory().getName());
-                Authority concurrentLoginPermission = new ConcurrentLoginPermission(
-                    userProperties.getMaxLoginNumber(),
-                    userProperties.getMaxLoginPerIp()
-                );
-                Authority transferRatePermission = new TransferRatePermission(
-                    (int) userProperties.getDownloadRate().toBytes(),
-                    (int) userProperties.getUploadRate().toBytes()
-                );
-                List<Authority> authorities = new ArrayList<>(3);
-                authorities.add(writePermission);
-                authorities.add(concurrentLoginPermission);
-                authorities.add(transferRatePermission);
-                user.setAuthorities(authorities);
-
-                return user;
-            })
-            .collect(Collectors.toList());
+    public FtpUserManager(final Map<String, FtpServerConfigurationProperties.User> userSet) {
+        userSet.forEach((key, value) -> this.userSet.add(createUser(key, value)));
     }
 
-    @Override
-    public User getUserByName(String username) throws FtpException {
+    private static BaseUser createUser(
+        final String username,
+        final FtpServerConfigurationProperties.User userProperties) {
+        BaseUser user = new BaseUser();
 
+        Optional.of(username).ifPresent(user::setName);
+        Optional.ofNullable(userProperties.getUserPassword()).ifPresent(user::setPassword);
+        Optional.ofNullable(userProperties.getHomeDirectory()).ifPresent(file ->
+            user.setHomeDirectory(file.getAbsolutePath()));
+        Optional.ofNullable(userProperties.getEnableFlag()).ifPresent(user::setEnabled);
+        Optional.ofNullable(userProperties.getIdleTime()).ifPresent(duration ->
+            user.setMaxIdleTime((int) duration.getSeconds()));
 
-        for (User user : users) {
-            if (Objects.equals(user.getName(), username)) {
-                return user;
-            }
+        List<Authority> authorities = new ArrayList<>(3);
+
+        // If user has write permission, set the home directory by default
+        Optional.ofNullable(userProperties.getWritePermission())
+            .filter(aBoolean -> aBoolean)
+            .ifPresent(aBoolean -> authorities.add(
+                new WritePermission(userProperties.getHomeDirectory().getAbsolutePath()))
+            );
+
+        Optional<Integer> maxLoginNumber = Optional.ofNullable(userProperties.getMaxLoginNumber());
+        Optional<Integer> maxLoginPerIp = Optional.ofNullable(userProperties.getMaxLoginPerIp());
+        if (maxLoginNumber.isPresent() && maxLoginPerIp.isPresent()) {
+            authorities.add(
+                new ConcurrentLoginPermission(maxLoginNumber.get(), maxLoginPerIp.get())
+            );
         }
-        return null;
+
+        Optional<DataSize> downloadRate = Optional.ofNullable(userProperties.getDownloadRate());
+        Optional<DataSize> uploadRate = Optional.ofNullable(userProperties.getUploadRate());
+        if (downloadRate.isPresent() && uploadRate.isPresent()) {
+            authorities.add(
+                new TransferRatePermission(
+                    (int) downloadRate.get().toBytes(),
+                    (int) uploadRate.get().toBytes()
+                )
+            );
+        }
+
+        user.setAuthorities(authorities);
+
+        return user;
     }
 
     @Override
-    public String[] getAllUserNames() throws FtpException {
-        return users.stream().map(User::getName).toArray(String[]::new);
+    public User getUserByName(final String username) {
+        return this.userSet.stream()
+            .filter(user -> Objects.equals(user.getName(), username))
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
-    public void delete(String username) throws FtpException {
-        throw new FtpException("Unsupported operations, please manually delete in application.properties");
+    public String[] getAllUserNames() {
+        return this.userSet.stream().map(User::getName).distinct().toArray(String[]::new);
     }
 
     @Override
-    public void save(User user) throws FtpException {
-        throw new FtpException("Unsupported operations, please manually add in application.properties");
+    public void delete(final String username) throws FtpException {
+        throw new FtpException("Unsupported operation, please manually delete in application.properties");
     }
 
     @Override
-    public boolean doesExist(String username) throws FtpException {
-        return users.stream().map(User::getName).anyMatch(s -> Objects.equals(s, username));
+    public void save(final User user) throws FtpException {
+        throw new FtpException("Unsupported operation, please manually add in application.properties");
     }
 
     @Override
-    public User authenticate(Authentication authentication) throws AuthenticationFailedException {
-        return null;
+    public boolean doesExist(final String username) {
+        return this.userSet.stream().anyMatch(user -> Objects.equals(user.getName(), username));
     }
 
     @Override
-    public String getAdminName() throws FtpException {
+    public User authenticate(final Authentication authentication) throws AuthenticationFailedException {
+        if (authentication instanceof UsernamePasswordAuthentication) {
+            UsernamePasswordAuthentication usernamePasswordAuthentication = (UsernamePasswordAuthentication) authentication;
+
+            return Optional.ofNullable(getUserByName(usernamePasswordAuthentication.getUsername()))
+                .filter(user -> Objects.equals(user.getPassword(), usernamePasswordAuthentication.getPassword()))
+                .orElseThrow(() -> new AuthenticationFailedException("The ftp username or password is incorrect"));
+        } else if (authentication instanceof AnonymousAuthentication) {
+            // Anonymous has no password
+            return getUserByName("anonymous");
+        }
+        throw new IllegalArgumentException("Authentication not supported by this user manager");
+    }
+
+    @Override
+    public String getAdminName() {
+        // The default admin user named "admin", and case sensitive
         return "admin";
     }
 
     @Override
-    public boolean isAdmin(String username) throws FtpException {
+    public boolean isAdmin(final String username) {
         return Objects.equals("admin", username);
+    }
+
+    public User[] getAllUser() {
+        return this.userSet.toArray(new User[0]);
     }
 
 }

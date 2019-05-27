@@ -34,7 +34,7 @@ public class FtpServerInitializationBean implements InitializingBean, Disposable
     private final FtpServer ftpServer;
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         if (!ftpServer.isStopped()) {
             ftpServer.stop();
         }

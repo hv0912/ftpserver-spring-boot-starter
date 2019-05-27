@@ -11,7 +11,7 @@ subprojects {
 
     group = 'com.vimhe'
     // version = new Date().format('yyyyMMdd') + '-SNAPSHOT'
-    version = '1.0.0-RELEASE'
+    version = '1.0.2-RELEASE'
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
@@ -30,6 +30,15 @@ subprojects {
 
     bootJar { enabled = false }
     jar { enabled = true }
+
+    tasks.build {
+        doLast {
+            copy {
+                into "${project.parent.buildDir}/libs"
+                from "${project.buildDir}/libs"
+            }
+        }
+    }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = "sources"
@@ -67,13 +76,13 @@ subprojects {
                 pom.project {
                     name = project.archivesBaseName
                     description = "An apache ftp server starter for spring boot."
-                    url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                    url = "https://github.com/hv0912/ftpserver-spring-boot-starter"
                     packaging = "jar"
 
                     scm {
-                        url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
-                        connection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
-                        developerConnection = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter.git"
+                        url = "https://github.com/hv0912/ftpserver-spring-boot-starter"
+                        connection = "https://github.com/hv0912/ftpserver-spring-boot-starter.git"
+                        developerConnection = "https://github.com/hv0912/ftpserver-spring-boot-starter.git"
                     }
 
                     licenses {
@@ -88,7 +97,7 @@ subprojects {
                         developer {
                             name = "vimhe"
                             email = "vimhe0912@gmail.com"
-                            url = "https://github.com/hv0912/vimhe-ftpserver-spring-boot-starter"
+                            url = "https://github.com/hv0912/ftpserver-spring-boot-starter"
                         }
                     }
                 }
